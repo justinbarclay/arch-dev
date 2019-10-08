@@ -1,7 +1,7 @@
 FROM archlinux/base
 
-RUN pacman -Sy
-RUN pacman -S --noconfirm --needed base-devel sudo git fish man
+RUN pacman -Syu --noconfirm
+RUN pacman -S --noconfirm --needed base-devel sudo git fish man openssh
 
 # Setup sudoers file
 # https://unix.stackexchange.com/a/79341
@@ -22,9 +22,9 @@ RUN sudo pacman -S --noconfirm --needed \
         # Minimum set of languages needed
         ruby jdk10-openjdk nodejs npm rust go postgresql \
         # CLI tools
-        exa curl \
+        exa curl ripgrep openssh\
         # Dev libraries
-        libyaml
+        libyaml imagemagick
 
 # Install pacman helper, to download from AUR
 RUN git clone https://aur.archlinux.org/yay.git; \
@@ -32,9 +32,9 @@ RUN git clone https://aur.archlinux.org/yay.git; \
         makepkg -si --noconfirm
 
 #Update databases and install the most important tools a person could
-# the latest Emacs and a terminal prompt
+# the latest Emacs, terminal prompt, and some ruby shit
 RUN yay -Sy
-RUN yay -S --noconfirm emacs-git starship nerd-fonts-complete
+RUN yay -S --noconfirm emacs-git starship nerd-fonts-inconsolata rbenv ruby-build
 
 ## Emacs
 RUN git clone https://github.com/justinbarclay/.emacs.d.git ~/.emacs.d
@@ -53,23 +53,19 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > /tmp/install.sh;
 RUN source $HOME/.cargo/env
 
 # Ruby
-
-RUN fish omf install rbenv
-RUN fish rbenv install ruby-2.6.4
-RUN fish rbenv global ruby-2.6.4
-RUN fish gem install bundler -v 1.17.3
-RUN fish gem install rails -v 5.2
+RUN rbenv rehash
+RUN rbenv install 2.6.5
+RUN rbenv global 2.6.5
+RUN gem install bundler -v 1.17.3
+RUN gem install rails -v 5.2
 
 # Clojure
-RUN sudo pacman -S --noconfirm
 RUN sudo npm install -g shadow-cljs
 
 # Command stolen from https://clojure.org/guides/getting_started
 RUN curl -O https://download.clojure.org/install/linux-install-1.10.1.469.sh; \
         chmod +x linux-install-1.10.1.469.sh; \
         sudo ./linux-install-1.10.1.469.sh;
-
-RUN sudo pacman -S --noconfirm openssh
 
 # Configure git
 RUN git config --global color.ui true; \
