@@ -17,15 +17,6 @@ RUN useradd -rm -d /home/justin -s /usr/bin/fish -g root -G sudo -u 1000 justin 
 USER justin
 WORKDIR /home/justin
 
-# Install basic programming tools
-RUN sudo pacman -S --noconfirm --needed \
-        # Minimum set of languages needed
-        ruby jdk10-openjdk nodejs npm rust go postgresql \
-        # CLI tools
-        exa curl ripgrep openssh\
-        # Dev libraries
-        libyaml imagemagick
-
 # Install pacman helper, to download from AUR
 RUN git clone https://aur.archlinux.org/yay.git; \
         cd yay; \
@@ -42,6 +33,15 @@ RUN git clone https://github.com/justinbarclay/.emacs.d.git ~/.emacs.d
 RUN git clone https://github.com/jwiegley/use-package.git ~/.emacs.d/site-lisp/use-package
 
 RUN cd ~/.emacs.d/site-lisp/use-package; make; cd ~
+
+# Install basic programming tools
+RUN sudo pacman -S --noconfirm --needed \
+        # Minimum set of languages needed
+        ruby jdk10-openjdk nodejs npm go postgresql \
+        # CLI tools
+        exa curl ripgrep openssh jq \
+        # Dev libraries
+        libyaml imagemagick
 
 ## Shell
 RUN git clone https://github.com/justinbarclay/dotfiles ~/dev/dotfiles
@@ -72,3 +72,6 @@ RUN git config --global color.ui true; \
         git config --global user.name "Justin Barclay"; \
         git config --global user.email "justincbarclay@gmail.com"; \
         ssh-keygen -t rsa -q -N "" -b 4096 -C "justincbarclay@gmail.com" -f $HOME/.ssh/id_rsa
+
+# Clean up cache
+RUN yay -Sc --noconfirm
