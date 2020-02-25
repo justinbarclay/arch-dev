@@ -1,7 +1,7 @@
 FROM archlinux/base
 
 RUN pacman -Syu --noconfirm
-RUN pacman -S --noconfirm --needed base-devel sudo git fish man openssh
+RUN pacman -S --noconfirm --needed base-devel sudo git gnupg fish man openssh postgresql
 
 # Setup sudoers file
 # https://unix.stackexchange.com/a/79341
@@ -25,7 +25,10 @@ RUN git clone https://aur.archlinux.org/yay.git; \
 #Update databases and install the most important tools a person could
 # the latest Emacs, terminal prompt, and some ruby shit
 RUN yay -Sy
-RUN yay -S --noconfirm emacs-git starship nerd-fonts-inconsolata rbenv ruby-build
+RUN yay -S --noconfirm \
+        emacs-git starship nerd-fonts-inconsolata rbenv ruby-build \
+        #CLI tools for email
+        notmuch gmailieer
 
 ## Emacs
 RUN git clone https://github.com/justinbarclay/.emacs.d.git ~/.emacs.d
@@ -37,7 +40,7 @@ RUN cd ~/.emacs.d/site-lisp/use-package; make; cd ~
 # Install basic programming tools
 RUN sudo pacman -S --noconfirm --needed \
         # Minimum set of languages needed
-        ruby jdk10-openjdk nodejs npm go postgresql \
+        ruby jdk10-openjdk nodejs npm go \
         # CLI tools
         exa curl ripgrep openssh jq \
         # Dev libraries
@@ -49,6 +52,7 @@ RUN fish curl -L https://get.oh-my.fish > /tmp/install.sh; fish /tmp/install.sh 
 
 ## Programming languages
 # Rust and Cargo
+# Using rustup here because it will manage Rust version instead of something like pacman or yay
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > /tmp/install.sh; sh /tmp/install.sh -y; rm /tmp/install.sh
 RUN source $HOME/.cargo/env
 
@@ -65,12 +69,14 @@ RUN sudo npm install -g shadow-cljs
 # Command stolen from https://clojure.org/guides/getting_started
 RUN curl -O https://download.clojure.org/install/linux-install-1.10.1.469.sh; \
         chmod +x linux-install-1.10.1.469.sh; \
-        sudo ./linux-install-1.10.1.469.sh;
+        sudo ./linux-install-1.10.1.469.sh; \
+        rm linux-install-1.10.1.469.sh;
 
 # Configure git
 RUN git config --global color.ui true; \
         git config --global user.name "Justin Barclay"; \
         git config --global user.email "justincbarclay@gmail.com"; \
+        git config --global pull.rebase true \
         ssh-keygen -t rsa -q -N "" -b 4096 -C "justincbarclay@gmail.com" -f $HOME/.ssh/id_rsa
 
 # Clean up cache
