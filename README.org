@@ -1,1 +1,40 @@
 A dev environment for WSL2
+
+* Setup the docker container as a WSL2 Instance
+1. Build the image
+#+BEGIN_SRC shell
+docker build -t arch build
+#+END_SRC
+
+2. Export the container
+
+#+BEGIN_SRC shell
+docker save arch2 -o ./arch.tar
+#+END_SRC
+
+3. Create a new directory to store all the distros
+#+BEGIN_SRC shell
+mkdir i:\wsl
+#+END_SRC
+
+4. Copy the .tar file into the distros directory
+#+BEGIN_SRC shell
+cp .\arch.tar i:\wsl\arch.tar
+#+END_SRC
+
+5. Go to distros directory and create the new distro
+#+BEGIN_SRC shell
+cd i:\wsl
+
+wsl.exe --import arch .\arch .\arch.tar
+#+END_SRC
+
+6. Check that the distro has been correctly created
+#+BEGIN_SRC shell
+wsl.exe --list
+#+END_SRC
+
+7. Run the newly created distro with the user created during the customization
+#+BEGIN_SRC shell
+wsl.exe -d wslarch --user justin
+#+END_SRC
