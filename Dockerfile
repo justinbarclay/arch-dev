@@ -33,9 +33,7 @@ RUN rm -rf ./yay
 # the latest Emacs, terminal prompt, and some ruby shit
 RUN yay -Sy
 RUN yay -S --noconfirm \
-        emacs-git starship nerd-fonts-inconsolata rbenv ruby-build \
-        #CLI tools for email
-        notmuch gmailieer
+        emacs-git starship nerd-fonts-inconsolata rbenv ruby-build
 
 # Install Fonts
 RUN git clone https://github.com/powerline/fonts.git /tmp/fonts; \
@@ -89,6 +87,10 @@ RUN git config --global color.ui true; \
         git config --global pull.rebase true; \
         ssh-keygen -t rsa -q -N "" -b 4096 -C "justincbarclay@gmail.com" -f $HOME/.ssh/id_rsa
 
+# Non dev related programs, these are things that I expect to change more often
+RUN yay -Syu --noconfirm \
+        ispell \ # Spellchecking, needed for flyspell
+        notmuch gmailieer # CLI Email tools
 # Clean up cache
 RUN yay -Sc --noconfirm
 
