@@ -1,6 +1,10 @@
+# Note as you read this document, I run yay _mutliple times in this setup and that's
+# to take advantage of the caching that docker does. The further down in the file the
+# yay command, the more likely I am to add or remove software.
 FROM archlinux/base
 
-RUN pacman -Syu --noconfirm --needed base-devel sudo git gnupg zsh man openssh postgresql
+RUN pacman -Syu --noconfirm --needed base-devel sudo git \
+        gnupg zsh man openssh postgresql htop
 
 # Setup sudoers file
 # https://unix.stackexchange.com/a/79341
@@ -33,9 +37,9 @@ RUN rm -rf ./yay
 # the latest Emacs, terminal prompt, and some ruby shit
 RUN yay -Sy
 RUN yay -S --noconfirm \
-        emacs-git starship nerd-fonts-inconsolata rbenv ruby-build
+        emacs-git starship nerd-fonts-inconsolata rbenv ruby-build ttf-cascadia-code
 
-# Install Fonts
+# Install Powerline Fonts
 RUN git clone https://github.com/powerline/fonts.git /tmp/fonts; \
         /tmp/fonts/install.sh; \
         rm -rf fonts
@@ -47,7 +51,7 @@ RUN git clone https://github.com/jwiegley/use-package.git ~/.emacs.d/site-lisp/u
 RUN cd ~/.emacs.d/site-lisp/use-package; make; cd ~
 
 # Install basic programming tools
-RUN sudo pacman -S --noconfirm --needed \
+RUN yay -S --noconfirm --needed \
         # Minimum set of languages needed
         ruby jdk10-openjdk nodejs npm go \
         # CLI tools
