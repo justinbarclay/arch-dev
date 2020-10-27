@@ -37,7 +37,8 @@ RUN rm -rf ./yay
 # the latest Emacs, terminal prompt, and some ruby shit
 RUN yay -Sy
 RUN yay -S --noconfirm \
-        emacs-git starship nerd-fonts-inconsolata rbenv ruby-build ttf-cascadia-code
+        emacs-git starship nerd-fonts-inconsolata rbenv ruby-build \
+        ttf-cascadia-code nerd-fonts-cascadia-code nerd-fonts-inconsolata
 
 # Install Powerline Fonts
 RUN git clone https://github.com/powerline/fonts.git /tmp/fonts; \
@@ -53,7 +54,7 @@ RUN cd ~/.emacs.d/site-lisp/use-package; make; cd ~
 # Install basic programming tools
 RUN yay -S --noconfirm --needed \
         # Minimum set of languages needed
-        ruby jdk10-openjdk nodejs npm go \
+        ruby jdk11-openjdk nodejs npm go \
         # CLI tools
         exa curl ripgrep openssh jq \
         # Dev libraries
@@ -93,13 +94,24 @@ RUN git config --global color.ui true; \
 
 # Non dev related programs, these are things that I expect to change more often
 RUN yay -Syu --noconfirm \
-        ispell \ # Spellchecking, needed for flyspell
-        notmuch gmailieer # CLI Email tools
+        # Spellchecking, needed for flyspell
+        ispell languagetool \
+        # CLI Email tools
+        notmuch gmailieer \
+        # Graphing tools
+        gnuplot graphviz \
+        # Compressing
+        zip unzip \
+        # Networking
+        nmap \
+        # Document writing/conversion
+        pandoc texlive-most
+
 # Clean up cache
 RUN yay -Sc --noconfirm
 
 RUN ~/dev/dotfiles/setup.sh zsh
 
 # Delete /etc/resolv.conf to allow WSL to generate a version based on Windows networking information
-RUN rm /etc/resolv.conf
+# RUN rm -f /etc/resolv.conf
 RUN echo "You need to setup GPG for signing git keys, ssh keys for Gitlab, Github, and AWS"
